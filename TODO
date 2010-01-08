@@ -1,4 +1,5 @@
 - Add documentation from commits to scripts.
+- Replace all other instances of these scripts with symbolic links.
 - Add TI-89 stuff.
 - Write some cool Objective-C program to put in here.
 - Learn Objective-C.
