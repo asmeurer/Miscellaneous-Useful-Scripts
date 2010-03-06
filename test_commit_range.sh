@@ -25,20 +25,32 @@
 #
 #############################################################################
 
-if [$# -ne 3]
+if [ $# -ne 3 ]
 then
-    echo "test_commit_range requires exactly 3 arguments."
+    echo "test_commit_range.sh requires exactly 3 arguments."
     echo "Usage: ./test_commit_range.sh earliest_commit latest_commit output_file"
+    echo *
     exit 1
 else
-    first=$1
-    last=$2
+    # If we start on a branch, we want to end there too
+    currentbranch=`git branch | grep '^\*' | sed 's/\* \(.*\)/\1/g'`
+    if [ "$currentbranch" != "(no branch)" ]
+    then
+        current=$currentbranch
+    else
+        current=`git rev-parse HEAD`
+    fi
+    first=`git rev-parse $1~1`
+    last=`git rev-parse $2`
     file=$3
-    git checkout $first
-    while [git rev-parse $last -ne git rev-parse HEAD]
+    git checkout -q $last
+    while [ `git rev-parse $first` != `git rev-parse HEAD` ]
     do
-        echo `git log --oneline HEAD~1..HEAD` | tee >> file
-        ./setup.py test | tee >> file
+        echo Moving to `git log --oneline | head -n 1` | tee -a $file
+        ./setup.py test | tee -a $file
+        echo | $file
+        git checkout -q HEAD~1
     done
+    git checkout -q $current
     exit 0
 fi
