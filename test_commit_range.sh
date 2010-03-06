@@ -29,7 +29,6 @@ if [ $# -ne 3 ]
 then
     echo "test_commit_range.sh requires exactly 3 arguments."
     echo "Usage: ./test_commit_range.sh earliest_commit latest_commit output_file"
-    echo *
     exit 1
 else
     # If we start on a branch, we want to end there too
