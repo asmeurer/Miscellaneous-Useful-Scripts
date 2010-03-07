@@ -47,7 +47,7 @@ else
     do
         echo Moving to `git log --oneline | head -n 1` | tee -a $file
         ./setup.py test | tee -a $file
-        echo | $file
+        echo >> $file
         git checkout -q HEAD~1
     done
     git checkout -q $current
