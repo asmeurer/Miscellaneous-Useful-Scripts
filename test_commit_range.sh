@@ -42,6 +42,9 @@ else
     first=`git rev-parse $1~1`
     last=`git rev-parse $2`
     file=$3
+    touch $file
+    echo "test_commit_range.sh from $1 ($first) to $2 ($last) (working backwards)" | tee -a $file
+    echo | tee -a $file
     git checkout -q $last
     while [ `git rev-parse $first` != `git rev-parse HEAD` ]
     do
@@ -50,6 +53,7 @@ else
         echo >> $file
         git checkout -q HEAD~1
     done
+    echo "Finished testing." | tee -a $file
     git checkout -q $current
     exit 0
 fi
