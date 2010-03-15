@@ -30,6 +30,10 @@ then
     echo "test_commit_range.sh requires exactly 3 arguments."
     echo "Usage: ./test_commit_range.sh earliest_commit latest_commit output_file"
     exit 1
+elif ! git log --format='%H' $2 | grep `git rev-parse $1`
+then
+    echo "test_commit_range.sh: $1 is not an ancestor of $2."
+    exit 1
 else
     # If we start on a branch, we want to end there too
     currentbranch=`git branch | grep '^\*' | sed 's/\* \(.*\)/\1/g'`
