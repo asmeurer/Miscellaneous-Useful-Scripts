@@ -33,6 +33,12 @@ Command line arguments:
 	-t: Download strips starting with date.  It will run from that date back
 	until a strip has  already been downloaded, or it is the start date for
 	the strip.  The default is today (the current date)
+
+TODO:
+- Use optparser
+- Fix this to work (figure out what needs to be done and do it)
+- Double check the strips dict
+- Clean up the source
 """
 
 import sys
