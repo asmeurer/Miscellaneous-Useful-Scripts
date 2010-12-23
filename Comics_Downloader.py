@@ -1,6 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
-# Modified from getben.py, which is in ~/Dowloads/comic/ as of 20080116
+# Modified from getben.py, which is in ~/Downloads/comic/ as of 20080116
 
 """
 Comics Downloader.py
@@ -48,6 +48,7 @@ import xml.dom.minidom
 import os
 
 from datetime import timedelta, date, datetime
+from argparse import ArgumentParser
 
 DATEFORMAT = '%Y-%m-%d'
 # The dictionarys for the strips, all in one dictionary
@@ -98,7 +99,23 @@ path_prefix = ''.join(["/Users/aaronmeurer/Documents/Comics_test/", ACME_name,
 # The remainder of the path with the year should be created later
 
 # Get the command line arguments
-# TODO: refactor with optparse
+# TODO: refactor with new optparse
+usage = "usage: comics_downloader.py [-s|--strips strip names] [-t|--times dates (yyyymmdd)]"
+parser = ArgumentParser(description=usage)
+
+parser.add_option(
+    '-s', '--strips',
+    dest='strips',
+    action='store',
+    default=None,
+    help="Download just the strips listed.  Use the ACMEReader short name " +
+    "(the name of the comic's folder in ~/Documents/Comics/).")
+
+parser.add_option(
+    '-t', '--t',
+    dest='strips',
+    action='store'
+
 if len(sys.argv) > 1:
     if '-s' in sys.argv:
 #        while
