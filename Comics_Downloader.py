@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # Modified from getben.py, which is in ~/Downloads/comic/ as of 20080116
 
@@ -31,7 +31,7 @@ Command line arguments:
     -s: Download just the strips listed.  Use the ACMEReader short name (the
     name of the comic's folder in ~/Documents/Comics/).
     -t: Download strips starting with date.  It will run from that date back
-    until a strip has  already been downloaded, or it is the start date for
+    until a strip has already been downloaded, or it hits the start date for
     the strip.  The default is today (the current date)
 
 TODO:
@@ -99,7 +99,6 @@ path_prefix = ''.join(["/Users/aaronmeurer/Documents/Comics_test/", ACME_name,
 # The remainder of the path with the year should be created later
 
 # Get the command line arguments
-# TODO: refactor with new optparse
 usage = "usage: comics_downloader.py [-s|--strips strip names] [-t|--times dates (yyyymmdd)]"
 parser = ArgumentParser(description=usage)
 
@@ -113,8 +112,12 @@ parser.add_option(
 
 parser.add_option(
     '-t', '--t',
-    dest='strips',
-    action='store'
+    dest='time',
+    action='store',
+    default=None,
+    help="Download strips starting from the given date, given in yyyymmdd " +
+    "format. It goes back until it finds an already downloaded strip, or " +
+    "until it reaches the start date for that strip.")
 
 if len(sys.argv) > 1:
     if '-s' in sys.argv:
@@ -124,7 +127,7 @@ if len(sys.argv) > 1:
         day = datetime.strptime(sys.argv[1], '%Y%m%d')
         day = date.fromordinal(day.toordinal())
     except ValueError:
-        print "The time format entered must be yyyymmdd."
+        print("The time format entered must be yyyymmdd.")
         sys.exit(1)
 else:
     day = date.today()
@@ -142,9 +145,9 @@ fileName = None
 # First figure out how many days search for
 
 if day < firstDate:
-    print ''.join(["There probably won't be any strips downloaded, because ",
+    print("There probably won't be any strips downloaded, because ",
         day.strftime(DATEFORMAT), " is before the first date, ",
-        firstDate.strftime(DATEFORMAT)])
+        firstDate.strftime(DATEFORMAT), sep='')
 number_of_days = 0
 pathYear = str(day.year)
 tempDay = day
@@ -166,24 +169,24 @@ while not os.path.exists(fullPathGif) and \
     fullPathJpg = ''.join([path_prefix, pathYear, "/", fileNameJpg])
 
 if number_of_days == 0:
-    print ''.join([FullName, ": No strips were downloaded"])
+    print(FullName, ": No strips were downloaded", sep='')
 else:
-    print ''.join([FullName, ": ", str(number_of_days), " strip(s) will",
+    print(FullName, ": ", str(number_of_days), " strip(s) will ",
         "be downloaded (from ", (day - (number_of_days -
         1)*one_day).strftime(DATEFORMAT), " to ",
-        day.strftime(DATEFORMAT), ")"])
+        day.strftime(DATEFORMAT), ")", sep='')
 
 # Then download the relevent strips
 
 badDays = []
 for i in range(number_of_days):
     url = temp1 % day.strftime(DATEFORMAT)
-    print "? %s: %s" % (day.strftime(DATEFORMAT), url)
+    print("? %s: %s" % (day.strftime(DATEFORMAT), url))
     fil = urllib.urlopen(url)
     for line in fil:
         errorTest = errornum.search(line)
         if errorTest is not None:
-            print "Date out of range (404)"
+            print("Date out of range (404)")
             badDays.append(day.strftime(DATEFORMAT))
             break
         else:
@@ -202,12 +205,12 @@ for i in range(number_of_days):
 
     if fileName != None:
         url = temp2 % fileName
-        print "+ %s: %s" % (day.strftime(DATEFORMAT), url)
+        print("+ %s: %s" % (day.strftime(DATEFORMAT), url))
         fil = urllib.urlopen(url)
         pathYear = str(day.year)
         if not os.path.exists(''.join([path_prefix, pathYear, "/"])):
             os.mkdir(''.join([path_prefix, pathYear, "/"]))
-            print ''.join(["Created directory: ", path_prefix, pathYear, "/"])
+            print("Created directory: ", path_prefix, pathYear, "/", sep='')
         fileName = ''.join([ACME_name, "-", day.strftime(DATEFORMAT),
             imageFormat])
         diskfile = file(''.join([path_prefix, pathYear, "/", fileName, 'w']))
@@ -215,7 +218,7 @@ for i in range(number_of_days):
         fil.close()
         diskfile.close()
     else:
-        print ''.join(["Image not found: ", day.strftime(DATEFORMAT)])
+        print("Image not found: ", day.strftime(DATEFORMAT), sep='')
         if day.strftime(DATEFORMAT) not in badDays:
             badDays.append(day.strftime(DATEFORMAT))
 
@@ -223,8 +226,8 @@ for i in range(number_of_days):
     fileName = None
 
 if badDays:
-    print "The following dates produced errors:"
-    print badDays
+    print("The following dates produced errors:")
+    print(badDays)
 
 if number_of_days > len(badDays):
-    print "You will now need to syncronize ACMEReader to see the new strips"
+    print("You will now need to syncronize ACMEReader to see the new strips.")
