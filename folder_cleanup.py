@@ -87,9 +87,9 @@ def main(args):
             except OSError:
                 # _cleanup directory already exists
                 if not os.path.isdir(cleanup):
-                    print("Could not clean %(directory)s, %(cleanup) exists and is not "
-                          "a directory." % {'directory': directory, 'cleanup':
-                          cleanup})
+                    print("ERROR: Could not clean %(directory)s, %(cleanup)s "
+                          "exists and is not a directory." % {'directory':
+                          directory, 'cleanup':  cleanup}, file=sys.stderr)
                     continue
                 pass
             else:
@@ -98,9 +98,9 @@ def main(args):
         else:
             # At least check if it would give an error
             if os.path.exists(cleanup) and not os.path.isdir(cleanup):
-                print("Could not clean %(directory)s, %(cleanup)s exists and is not "
-                      "a directory." % {'directory': directory, 'cleanup':
-                      cleanup})
+                print("ERROR: Could not clean %(directory)s, %(cleanup)s "
+                      "exists and is not a directory." % {'directory':
+                      directory, 'cleanup':  cleanup}, file=sys.stderr)
                 continue
 
         for file in os.listdir(directory):
@@ -125,8 +125,8 @@ def main(args):
                        'newpath': newpath, 'verb':verb}
 
             if os.path.exists(newpath):
-                print("WARNING:  Could not move %(ftype)s %(file)s to "
-                      "%(newpath)s/, file already exists." % formatd)
+                print("WARNING: Could not move %(ftype)s %(file)s to "
+                      "%(newpath)s/, file already exists." % formatd, file=sys.stderr)
             else:
                 print("%(verb)s %(ftype)s %(file)s to %(newpath)s" % formatd,
                       end='')
