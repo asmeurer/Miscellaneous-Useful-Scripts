@@ -52,14 +52,26 @@ parser.add_argument("--dry-run", "-d", dest="dry_run", action="store_true",
                     help="Print what would happen, but don't actually move the "
                     "files.", default=False) # Change this when ready to ship
 
+parser.add_argument("--interactive", "-i", action="store_true",
+                    help="Interactively ask before moving each file.  Ignored "
+                    "if --dry-run is passed.")
 
 args = parser.parse_args()
 
 def main(args):
     dry_run = args.dry_run
+    interactive = args.interactive
 
     if dry_run:
-        print("Dry run mode: None of the following operations actually occur.")
+        print("Dry run mode: None of the following operations actually "
+              "occur.")
+        verb = 'Would move'
+    else:
+        if interactive:
+            verb = "Move"
+        else:
+            verb = "Moving"
+
     for directory in args.directories:
         if not os.path.isdir(directory):
             print("%(file)s is not a directory." % {'file': directory}, file=sys.stderr)
@@ -110,15 +122,29 @@ def main(args):
             newpath = os.path.join(cleanup, folder, file)
 
             formatd = {'ftype': ftype, 'file': os.path.join(directory, file),
-                       'newpath': newpath}
+                       'newpath': newpath, 'verb':verb}
 
             if os.path.exists(newpath):
                 print("WARNING:  Could not move %(ftype)s %(file)s to "
                       "%(newpath)s/, file already exists." % formatd)
             else:
-                print("Moving %(ftype)s %(file)s to %(newpath)s/" % formatd)
+                print("%(verb)s %(ftype)s %(file)s to %(newpath)s" % formatd,
+                      end='')
                 if not dry_run:
-                    os.renames(os.path.join(directory, file), newpath)
+                    if interactive:
+                        print(" ? [Y/n] ", end='')
+                        ans = input()
+                        move = ans.lower() == 'y' or ans == ''
+                    else:
+                        move = True
+                    if move:
+                        os.renames(os.path.join(directory, file), newpath)
+                    else:
+                        print("Skipping")
+                if not interactive:
+                    print()
+
+        print("Done")
 
     return True
 
