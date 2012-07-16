@@ -132,8 +132,11 @@ def main(args):
                       end='')
                 if not dry_run:
                     if interactive:
-                        print(" ? [Y/n] ", end='')
+                        print(" ? [Y/n/q] ", end='')
                         ans = input()
+                        if ans.strip().lower() == 'q':
+                            print("Exiting...")
+                            sys.exit(1)
                         move = ans.lower() == 'y' or ans == ''
                     else:
                         move = True
