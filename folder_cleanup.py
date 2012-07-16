@@ -50,7 +50,7 @@ parser.add_argument("directories", nargs='+', help="The directories to be cleane
 
 parser.add_argument("--dry-run", "-d", dest="dry_run", action="store_true",
                     help="Print what would happen, but don't actually move the "
-                    "files.", default=True) # Change this when ready to ship
+                    "files.", default=False) # Change this when ready to ship
 
 
 args = parser.parse_args()
@@ -92,7 +92,7 @@ def main(args):
                 continue
 
         for file in os.listdir(directory):
-            if os.path.isdir(file):
+            if os.path.isdir(os.path.join(directory, file)):
                 if file == '_cleanup':
                     continue
                 ftype = 'directory'
@@ -107,12 +107,19 @@ def main(args):
                     folder = ext[1:] + 's'
 
 
-            newpath = os.path.join(cleanup, folder)
-            print("Moving %(ftype)s %(file)s to %(newpath)s/" % {
-                'ftype': ftype, 'file': os.path.join(directory, file), 'newpath': newpath})
+            newpath = os.path.join(cleanup, folder, file)
 
-            if not dry_run:
-                os.renames(file, newpath)
+            formatd = {'ftype': ftype, 'file': os.path.join(directory, file),
+                       'newpath': newpath}
+
+            if os.path.exists(newpath):
+                print("WARNING:  Could not move %(ftype)s %(file)s to "
+                      "%(newpath)s/, file already exists." % formatd)
+            else:
+                print("Moving %(ftype)s %(file)s to %(newpath)s/" % formatd)
+                if not dry_run:
+                    os.renames(os.path.join(directory, file), newpath)
+
     return True
 
 # XXX: This is probably not needed because of os.renames
