@@ -126,7 +126,7 @@ def main(args):
 
             if os.path.exists(newpath):
                 print("WARNING: Could not move %(ftype)s %(file)s to "
-                      "%(newpath)s/, file already exists." % formatd, file=sys.stderr)
+                      "%(newpath)s, file already exists." % formatd, file=sys.stderr)
             else:
                 print("%(verb)s %(ftype)s %(file)s to %(newpath)s" % formatd,
                       end='')
